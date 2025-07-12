@@ -3,6 +3,7 @@ Unit tests for the Persephone application
 """
 
 from unittest.mock import Mock
+
 from persephone import Persephone
 
 

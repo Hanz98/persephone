@@ -94,17 +94,23 @@ class Persephone(toga.App):  # type: ignore
 
         # Create input field
         self.name_input = toga.TextInput(  # type: ignore
-            placeholder="Enter your name", style=Pack(padding=(0, 0, 10, 0))  # type: ignore
+            placeholder="Enter your name",
+            style=Pack(padding=(0, 0, 10, 0)),  # type: ignore
         )
 
         # Create button
         greet_button = toga.Button(  # type: ignore
-            "Say Hello", on_press=self.say_hello, style=Pack(padding=(0, 0, 10, 0))  # type: ignore
+            "Say Hello",
+            on_press=self.say_hello,
+            style=Pack(padding=(0, 0, 10, 0)),  # type: ignore
         )
 
         # Create result label
         self.result_label = toga.Label(  # type: ignore
-            "", style=Pack(padding=(0, 0, 10, 0), text_align="center", font_size=16)  # type: ignore
+            "",
+            style=Pack(
+                padding=(0, 0, 10, 0), text_align="center", font_size=16
+            ),  # type: ignore
         )
 
         # Add all components to the main box

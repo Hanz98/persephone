@@ -59,6 +59,11 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -e .[dev]
 ```
 
+4. Set up pre-commit hooks for code style enforcement:
+```bash
+pre-commit install
+```
+
 ## Running the Application
 
 ### Development Mode
@@ -81,22 +86,32 @@ briefcase build
 briefcase package
 ```
 
-## Testing
+## Testing & Code Quality
 
-Run the test suite:
+### Running Tests
 ```bash
+# Run all tests
 pytest
-```
 
-Run tests with coverage:
-```bash
+# Run tests with coverage
 pytest --cov=src/persephone --cov-report=html
+
+# Run tests verbosely
+pytest -v
 ```
 
-## Code Quality
+### Code Style & Quality
+The project enforces code quality through pre-commit hooks and CI/CD:
 
-### Formatting
+- **Black**: Code formatting
+- **isort**: Import sorting
+- **Flake8**: Linting and syntax checking
+- **MyPy**: Type checking
+- **Pytest**: Unit testing with coverage
+
+#### Manual Quality Checks
 ```bash
+# Format code
 black src/ tests/
 ```
 
