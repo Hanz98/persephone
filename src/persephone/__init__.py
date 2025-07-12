@@ -3,6 +3,20 @@ Persephone - Cross-platform GUI application
 Main application module
 """
 
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    try:
+        import toga  # type: ignore
+        from toga.style import Pack  # type: ignore
+        from toga.style.pack import COLUMN, ROW  # type: ignore
+    except ImportError:
+        # For type checking when toga is not available
+        toga = Any  # type: ignore
+        Pack = Any  # type: ignore
+        COLUMN = Any  # type: ignore
+        ROW = Any  # type: ignore
+
 try:
     import toga
     from toga.style import Pack
@@ -16,9 +30,9 @@ except ImportError:
     class MockApp:
         def __init__(self, *args: object, **kwargs: object) -> None:
             self.formal_name = "Persephone"
-            self.main_window = None
-            self.name_input = None
-            self.result_label = None
+            self.main_window: Optional[Any] = None
+            self.name_input: Optional[Any] = None
+            self.result_label: Optional[Any] = None
 
         def startup(self) -> None:
             pass
@@ -42,14 +56,14 @@ except ImportError:
             "TextInput": MockWidget,
             "Button": MockWidget,
         },
-    )()
+    )()  # type: ignore
 
-    Pack = type("Pack", (), {})
+    Pack = type("Pack", (), {})  # type: ignore
     COLUMN = "column"
     ROW = "row"
 
 
-class Persephone(toga.App):
+class Persephone(toga.App):  # type: ignore
     """Main application class for Persephone"""
 
     def startup(self) -> None:
@@ -59,12 +73,12 @@ class Persephone(toga.App):
             return
 
         # Create the main box container
-        main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))
+        main_box = toga.Box(style=Pack(direction=COLUMN, padding=10))  # type: ignore
 
         # Create a welcome label
-        welcome_label = toga.Label(
+        welcome_label = toga.Label(  # type: ignore
             "Welcome to Persephone!",
-            style=Pack(
+            style=Pack(  # type: ignore
                 padding=(0, 0, 10, 0),
                 text_align="center",
                 font_size=20,
@@ -73,37 +87,37 @@ class Persephone(toga.App):
         )
 
         # Create description label
-        description_label = toga.Label(
+        description_label = toga.Label(  # type: ignore
             "A cross-platform GUI application built with Python and Toga.",
-            style=Pack(padding=(0, 0, 20, 0), text_align="center"),
+            style=Pack(padding=(0, 0, 20, 0), text_align="center"),  # type: ignore
         )
 
         # Create input field
-        self.name_input = toga.TextInput(
-            placeholder="Enter your name", style=Pack(padding=(0, 0, 10, 0))
+        self.name_input = toga.TextInput(  # type: ignore
+            placeholder="Enter your name", style=Pack(padding=(0, 0, 10, 0))  # type: ignore
         )
 
         # Create button
-        greet_button = toga.Button(
-            "Say Hello", on_press=self.say_hello, style=Pack(padding=(0, 0, 10, 0))
+        greet_button = toga.Button(  # type: ignore
+            "Say Hello", on_press=self.say_hello, style=Pack(padding=(0, 0, 10, 0))  # type: ignore
         )
 
         # Create result label
-        self.result_label = toga.Label(
-            "", style=Pack(padding=(0, 0, 10, 0), text_align="center", font_size=16)
+        self.result_label = toga.Label(  # type: ignore
+            "", style=Pack(padding=(0, 0, 10, 0), text_align="center", font_size=16)  # type: ignore
         )
 
         # Add all components to the main box
-        main_box.add(welcome_label)
-        main_box.add(description_label)
-        main_box.add(self.name_input)
-        main_box.add(greet_button)
-        main_box.add(self.result_label)
+        main_box.add(welcome_label)  # type: ignore
+        main_box.add(description_label)  # type: ignore
+        main_box.add(self.name_input)  # type: ignore
+        main_box.add(greet_button)  # type: ignore
+        main_box.add(self.result_label)  # type: ignore
 
         # Create the main window
-        self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = main_box
-        self.main_window.show()
+        self.main_window = toga.MainWindow(title=self.formal_name)  # type: ignore
+        self.main_window.content = main_box  # type: ignore
+        self.main_window.show()  # type: ignore
 
     def say_hello(self, widget: object = None) -> None:
         """Handle the say hello button press"""

@@ -131,24 +131,22 @@ jobs:
     - name: Package application (Linux)
       if: runner.os == 'Linux'
       run: |
-        briefcase package --format AppImage
+        briefcase package
     
     - name: Package application (Windows)
       if: runner.os == 'Windows'
       run: |
-        briefcase package --format MSI
+        briefcase package
     
     - name: Package application (macOS)
       if: runner.os == 'macOS'
       run: |
-        briefcase package --format DMG
+        briefcase package
     
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: persephone-${{ runner.os }}
         path: |
-          dist/*.AppImage
-          dist/*.msi  
-          dist/*.dmg
+          dist/*
         if-no-files-found: warn
