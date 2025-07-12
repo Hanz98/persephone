@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "persephone"
+description = "Cross-platform GUI application"
+version = "0.1.0"
+authors = [
+    {name = "Persephone Team"}
+]
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.8"
+dependencies = []
+
+[project.optional-dependencies]
+gui = [
+    "toga>=0.4.0",
+    "briefcase>=0.3.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=22.0.0",
+    "flake8>=5.0.0",
+    "mypy>=1.0.0",
+]
+full = [
+    "persephone[gui,dev]"
+]
+
+[project.urls]
+Repository = "https://github.com/Hanz98/persephone"
+
+[tool.briefcase]
+project_name = "Persephone"
+bundle = "com.persephone"
+version = "0.1.0"
+url = "https://github.com/Hanz98/persephone"
+license = "Apache License 2.0"
+author = "Persephone Team"
+author_email = "team@persephone.dev"
+
+[tool.briefcase.app.persephone]
+formal_name = "Persephone"
+description = "Cross-platform GUI application"
+icon = "resources/icon"
+sources = ["src/persephone"]
+requires = []
+
+[tool.briefcase.app.persephone.macOS]
+requires = []
+
+[tool.briefcase.app.persephone.linux]
+requires = []
+system_requires = []
+
+[tool.briefcase.app.persephone.windows]
+requires = []
+
+[tool.briefcase.app.persephone.android]
+requires = []
+
+[tool.briefcase.app.persephone.iOS]
+requires = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "--cov=src/persephone --cov-report=html --cov-report=term-missing"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
