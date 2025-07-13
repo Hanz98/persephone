@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.black-formatter",
+    "ms-python.flake8",
+    "ms-python.mypy-type-checker", 
+    "ms-python.isort",
+    "tamasfe.even-better-toml",
+    "ms-python.debugpy",
+    "ms-vscode.vscode-json",
+    "streetsidesoftware.code-spell-checker"
+  ]
+}
