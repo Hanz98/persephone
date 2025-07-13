@@ -208,3 +208,6 @@ __marimo__/
 
 # Demo and temporary files
 demo.py
+
+# Generated XML files from XML builder examples
+*.xml
