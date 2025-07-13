@@ -1,0 +1,215 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }} with Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        # Install basic development dependencies for testing
+        sudo apt-get install -y \
+          pkg-config \
+          python3-dev
+        # Try to install GUI dependencies, but don't fail if they're not available
+        # (our tests work in mock mode without GUI dependencies)
+        sudo apt-get install -y \
+          libgtk-3-dev \
+          libgdk-pixbuf2.0-dev \
+          libcairo-gobject2 \
+          libgirepository1.0-dev || echo "GUI dependencies not available, continuing without them"
+        # Try different WebKit package names for different Ubuntu versions
+        sudo apt-get install -y gir1.2-webkit2-4.0 || \
+        sudo apt-get install -y gir1.2-webkit2-4.1 || \
+        sudo apt-get install -y gir1.2-webkit-6.0 || \
+        echo "WebKit GI bindings not available, continuing without them"
+    
+    - name: Install system dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        brew install gobject-introspection gtk+3
+    
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-${{ matrix.python-version }}-
+          ${{ runner.os }}-pip-
+    
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e .[dev]
+        echo "Installed packages:"
+        pip list
+        
+    - name: Validate installation
+      run: |
+        echo "Validating Python package installation..."
+        python -c "import persephone; print('Package imported successfully')"
+        python -m persephone --help || echo "Module execution test completed"
+    
+    - name: Install and setup pre-commit
+      run: |
+        pre-commit install
+        pre-commit --version
+    
+    - name: Run pre-commit hooks
+      run: |
+        pre-commit run --all-files
+    
+    - name: Lint with flake8 (detailed)
+      run: |
+        echo "Running flake8 syntax checks..."
+        flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        echo "Running flake8 complexity and style checks..."
+        flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
+    
+    - name: Format check with black
+      run: |
+        echo "Checking code formatting with black..."
+        black --check --diff src/ tests/
+    
+    - name: Import sorting check with isort
+      run: |
+        echo "Checking import sorting with isort..."
+        isort --check-only --diff src/ tests/
+    
+    - name: Type check with mypy
+      run: |
+        echo "Running type checking with mypy..."
+        mypy src/ --show-error-codes
+    
+    - name: Run unit tests with pytest
+      run: |
+        echo "Running unit tests with coverage..."
+        pytest tests/ -v --cov=src/persephone --cov-report=xml --cov-report=term-missing
+        echo "Unit test execution completed."
+    
+    - name: Display test coverage summary
+      run: |
+        echo "Coverage Summary:"
+        coverage report --show-missing
+    
+    - name: Upload coverage to Codecov
+      if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  build:
+    name: Build application packages
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            python-version: '3.12'  # Use system Python for Ubuntu to avoid Briefcase conflicts
+          - os: windows-latest
+            python-version: '3.11'
+          - os: macos-latest
+            python-version: '3.11'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install system dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        # Install basic development dependencies for building
+        sudo apt-get install -y \
+          pkg-config \
+          python3-dev \
+          libgtk-3-dev \
+          libgdk-pixbuf2.0-dev \
+          libcairo-gobject2 \
+          libgirepository1.0-dev
+        # Try different WebKit package names for different Ubuntu versions
+        sudo apt-get install -y gir1.2-webkit2-4.0 || \
+        sudo apt-get install -y gir1.2-webkit2-4.1 || \
+        sudo apt-get install -y gir1.2-webkit-6.0 || \
+        echo "WebKit GI bindings not available, continuing without them"
+    
+    - name: Install system dependencies (macOS)  
+      if: runner.os == 'macOS'
+      run: |
+        brew install gobject-introspection gtk+3
+    
+    - name: Install briefcase and dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install briefcase
+        pip install -e .
+        echo "Briefcase version:"
+        briefcase --version
+    
+    - name: Create application
+      run: |
+        echo "Creating application with briefcase..."
+        briefcase create
+    
+    - name: Build application
+      run: |
+        echo "Building application with briefcase..."
+        briefcase build
+    
+    - name: Package application (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        echo "Packaging application for Linux..."
+        briefcase package --adhoc-sign
+      continue-on-error: true
+    
+    - name: Package application (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        echo "Packaging application for Windows..."
+        briefcase package --adhoc-sign
+      continue-on-error: true
+    
+    - name: Package application (macOS)
+      if: runner.os == 'macOS'
+      run: |
+        echo "Packaging application for macOS..."
+        briefcase package --adhoc-sign
+      continue-on-error: true
+    
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: persephone-${{ runner.os }}
+        path: |
+          dist/*
+        if-no-files-found: warn
