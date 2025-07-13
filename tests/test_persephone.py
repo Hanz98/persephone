@@ -15,7 +15,7 @@ class TestPersephone:
         app = Persephone()
         assert app is not None
         assert hasattr(app, "startup")
-        assert hasattr(app, "say_hello")
+        assert hasattr(app, "generate_xml_example")
 
     def test_startup_creates_ui_elements(self):
         """Test that startup method creates all necessary UI elements"""
@@ -28,62 +28,60 @@ class TestPersephone:
         # The app should still be created successfully
         assert app is not None
 
-    def test_say_hello_with_name(self):
-        """Test say_hello method with a name provided"""
+    def test_generate_xml_with_crop_code(self):
+        """Test generate_xml_example method with a crop code provided"""
         app = Persephone()
 
         # Mock the UI components
-        app.name_input = Mock()
-        app.name_input.value = "Alice"
+        app.crop_input = Mock()
+        app.crop_input.value = "WHEAT01"
         app.result_label = Mock()
 
         # Mock button widget
         widget = Mock()
 
         # Call the method
-        app.say_hello(widget)
+        app.generate_xml_example(widget)
 
-        # Verify the greeting was set correctly
-        expected_greeting = "Hello, Alice! Nice to meet you!"
-        app.result_label.text = expected_greeting
-        assert app.result_label.text == expected_greeting
+        # Verify the result contains expected content
+        result_text = app.result_label.text
+        assert "XML generated successfully for crop: WHEAT01" in result_text
+        assert "First 200 characters:" in result_text
 
-    def test_say_hello_without_name(self):
-        """Test say_hello method without a name provided"""
+    def test_generate_xml_without_crop_code(self):
+        """Test generate_xml_example method without a crop code provided"""
         app = Persephone()
 
         # Mock the UI components
-        app.name_input = Mock()
-        app.name_input.value = ""
+        app.crop_input = Mock()
+        app.crop_input.value = ""
         app.result_label = Mock()
 
         # Mock button widget
         widget = Mock()
 
         # Call the method
-        app.say_hello(widget)
+        app.generate_xml_example(widget)
 
-        # Verify the default greeting was set
-        expected_greeting = "Hello! Please enter your name above."
-        app.result_label.text = expected_greeting
-        assert app.result_label.text == expected_greeting
+        # Verify the default crop code is used
+        result_text = app.result_label.text
+        assert "XML generated successfully for crop: WHEAT01" in result_text
 
-    def test_say_hello_with_whitespace_name(self):
-        """Test say_hello method with whitespace-only name"""
+    def test_generate_xml_with_whitespace_crop_code(self):
+        """Test generate_xml_example method with whitespace-only crop code"""
         app = Persephone()
 
         # Mock the UI components
-        app.name_input = Mock()
-        app.name_input.value = "   "
+        app.crop_input = Mock()
+        app.crop_input.value = "   "
         app.result_label = Mock()
 
         # Mock button widget
         widget = Mock()
 
         # Call the method
-        app.say_hello(widget)
+        app.generate_xml_example(widget)
 
-        # Verify the default greeting was set (whitespace should be stripped)
-        expected_greeting = "Hello! Please enter your name above."
-        app.result_label.text = expected_greeting
-        assert app.result_label.text == expected_greeting
+        # Verify the default crop code is used (whitespace should be stripped)
+        result_text = app.result_label.text
+        assert "XML generated successfully for crop: WHEAT01" in result_text
