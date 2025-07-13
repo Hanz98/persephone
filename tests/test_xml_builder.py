@@ -2,31 +2,32 @@
 Test cases for the XML Builder module
 """
 
-import pytest
 from datetime import date
 from decimal import Decimal
 from xml.etree.ElementTree import fromstring
 
+import pytest
+
 from persephone.xml_builder import (
-    XMLBuilder,
-    Request,
-    Response,
-    Osev,
-    Vymera,
-    Pestovani,
     Aplikace,
-    Sklizen,
-    Pastva,
-    RozsahDat,
-    TypRequest,
-    RezimVolani,
-    RozsahKod,
-    TypPlodiny,
-    TypAplikace,
     DobaZapraveni,
     MernaJednotka,
     MetodaZivin,
+    Osev,
+    Pastva,
+    Pestovani,
+    Request,
+    Response,
+    RezimVolani,
+    RozsahDat,
+    RozsahKod,
+    Sklizen,
+    TypAplikace,
+    TypPlodiny,
     TypProduktu,
+    TypRequest,
+    Vymera,
+    XMLBuilder,
 )
 
 
@@ -131,7 +132,7 @@ class TestXMLBuilder:
             mnozstvi_ha=Decimal("95.270"),
             merna_jednotka=MernaJednotka.KG,
             id_hnojivo=789,
-            metoda_zivin=MetodaZivin.O,
+            metoda_zivin=MetodaZivin.OXIDOVA,
             privod_n=Decimal("12.50"),
             privod_p=Decimal("8.25"),
             privod_k=Decimal("15.00"),
@@ -164,13 +165,13 @@ class TestXMLBuilder:
             merna_jednotka=MernaJednotka.T,
             id_hnojivo=333,
             nazev_hnojivo="Test Manure",
-            metoda_zivin=MetodaZivin.P,
+            metoda_zivin=MetodaZivin.PRVKOVA,
             privod_n=Decimal("5.25"),
             privod_p=Decimal("3.10"),
             privod_k=Decimal("7.85"),
         )
 
-        rozsah_dat = [RozsahDat(kod=RozsahKod.O), RozsahDat(kod=RozsahKod.H)]
+        rozsah_dat = [RozsahDat(kod=RozsahKod.OSEVY), RozsahDat(kod=RozsahKod.HNOJIVA)]
 
         request = Request(
             typ=TypRequest.S,

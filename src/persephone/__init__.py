@@ -3,9 +3,9 @@ Persephone - Cross-platform GUI application
 Main application module with XML Builder for EH_PEH02A service
 """
 
-from typing import TYPE_CHECKING, Any, Optional
 from datetime import date
 from decimal import Decimal
+from typing import TYPE_CHECKING, Any, Optional
 
 if TYPE_CHECKING:
     try:
@@ -143,13 +143,13 @@ class Persephone(toga.App):  # type: ignore
             # Import the XML builder
             try:
                 from .xml_builder import (
-                    XMLBuilder,
-                    Request,
                     Osev,
-                    Vymera,
                     Pestovani,
-                    TypRequest,
+                    Request,
                     TypPlodiny,
+                    TypRequest,
+                    Vymera,
+                    XMLBuilder,
                 )
 
                 # Create example data
@@ -180,7 +180,10 @@ class Persephone(toga.App):  # type: ignore
                 builder = XMLBuilder()
                 xml = builder.build_request_xml(request)
 
-                message = f"XML generated successfully for crop: {crop_code}\n\nFirst 200 characters:\n{xml[:200]}..."
+                message = (
+                    f"XML generated successfully for crop: {crop_code}\n\n"
+                    f"First 200 characters:\n{xml[:200]}..."
+                )
 
             except ImportError as e:
                 message = f"XML Builder not available: {e}"
@@ -197,13 +200,13 @@ class Persephone(toga.App):  # type: ignore
 
         try:
             from .xml_builder import (
-                XMLBuilder,
-                Request,
                 Osev,
-                Vymera,
                 Pestovani,
-                TypRequest,
+                Request,
                 TypPlodiny,
+                TypRequest,
+                Vymera,
+                XMLBuilder,
             )
 
             # Create example data
@@ -234,7 +237,10 @@ class Persephone(toga.App):  # type: ignore
             builder = XMLBuilder()
             xml = builder.build_request_xml(request)
 
-            message = f"XML generated successfully for crop: {crop_code}\n\nFirst 200 characters:\n{xml[:200]}..."
+            message = (
+                f"XML generated successfully for crop: {crop_code}\n\n"
+                f"First 200 characters:\n{xml[:200]}..."
+            )
 
         except Exception as e:
             message = f"Error generating XML: {e}"

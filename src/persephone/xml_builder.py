@@ -5,10 +5,9 @@ XML Builder for EH_PEH02A Agricultural Data Service
 from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
+from enum import Enum
 from typing import List, Optional, Union
 from xml.etree.ElementTree import Element, SubElement, tostring
-import xml.etree.ElementTree as ET
-from enum import Enum
 
 
 class TypRequest(Enum):
@@ -29,10 +28,10 @@ class RezimVolani(Enum):
 class RozsahKod(Enum):
     """Data scope code enumeration"""
 
-    O = "O"  # Crops
-    H = "H"  # Fertilizer applications
-    P = "P"  # Grazing
-    S = "S"  # Harvests
+    OSEVY = "O"  # Crops
+    HNOJIVA = "H"  # Fertilizer applications
+    PASTVY = "P"  # Grazing
+    SKLIZNE = "S"  # Harvests
 
 
 class TypPlodiny(Enum):
@@ -57,7 +56,7 @@ class TypAplikace(Enum):
 class DobaZapraveni(Enum):
     """Cultivation time enumeration"""
 
-    I = "I"  # Immediately with application
+    IHNED = "I"  # Immediately with application
     H12 = "12"  # Up to 12 hours after application
     H24 = "24"  # 12 to 24 hours after application
     H48 = "48"  # 24 to 48 hours after application
@@ -75,8 +74,8 @@ class MernaJednotka(Enum):
 class MetodaZivin(Enum):
     """Nutrient method enumeration"""
 
-    P = "P"  # Elemental form
-    O = "O"  # Oxide form
+    PRVKOVA = "P"  # Elemental form
+    OXIDOVA = "O"  # Oxide form
 
 
 class TypProduktu(Enum):
@@ -101,7 +100,7 @@ class Vymera:
     platnost_od: date
     platnost_do: Optional[date] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Ensure 2 decimal places precision
         self.vymera = round(self.vymera, 2)
 
@@ -166,7 +165,7 @@ class Aplikace:
     privod_s: Optional[Decimal] = None
     rozklad_slamy: Optional[bool] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Ensure proper decimal precision
         if self.vymera_plodiny is not None:
             self.vymera_plodiny = round(self.vymera_plodiny, 2)
@@ -204,7 +203,7 @@ class Sklizen:
     mnozstvi_ha: Optional[Decimal] = None
     susina: Optional[int] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Ensure proper decimal precision
         self.vymera_sklizne = round(self.vymera_sklizne, 3)
         if self.mnozstvi_celkem is not None:
@@ -236,7 +235,7 @@ class Pastva:
     privod_p: Optional[Decimal] = None
     privod_k: Optional[Decimal] = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Ensure proper decimal precision
         self.pocet_ks = round(self.pocet_ks, 3)
         self.pocet_dj = round(self.pocet_dj, 3)
@@ -277,14 +276,14 @@ class Response:
 class XMLBuilder:
     """XML Builder for EH_PEH02A service"""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.encoding = "utf-8"
 
     def _add_element_if_not_none(
         self,
         parent: Element,
         tag: str,
-        value: Union[str, int, bool, Decimal, date, None],
+        value: Union[str, int, bool, Decimal, date, Enum, None],
         enum_value: bool = False,
     ) -> None:
         """Add XML element only if value is not None"""
