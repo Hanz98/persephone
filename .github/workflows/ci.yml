@@ -128,14 +128,21 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            python-version: '3.12'  # Use system Python for Ubuntu to avoid Briefcase conflicts
+          - os: windows-latest
+            python-version: '3.11'
+          - os: macos-latest
+            python-version: '3.11'
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python 3.11
+    - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11'
+        python-version: ${{ matrix.python-version }}
     
     - name: Install system dependencies (Linux)
       if: runner.os == 'Linux'
@@ -182,21 +189,21 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         echo "Packaging application for Linux..."
-        briefcase package --no-sign
+        briefcase package --adhoc-sign
       continue-on-error: true
     
     - name: Package application (Windows)
       if: runner.os == 'Windows'
       run: |
         echo "Packaging application for Windows..."
-        briefcase package --no-sign
+        briefcase package --adhoc-sign
       continue-on-error: true
     
     - name: Package application (macOS)
       if: runner.os == 'macOS'
       run: |
         echo "Packaging application for macOS..."
-        briefcase package --no-sign
+        briefcase package --adhoc-sign
       continue-on-error: true
     
     - name: Upload artifacts
